@@ -23,10 +23,9 @@ RequestHandler::RequestHandler()
 std::string RequestHandler::HandleReq(int ID) {
   if (ID < 10) {
     NumPress(ID);
-  } else {
+  } else if ((error_happened && ID < 12) || !error_happened) {
     ((*this).*(funcs[ID - 10]))();
   }
-  // ((*this).*(method_ptr))();
 
   if (!powered_on) {
     return StringForOffState();
@@ -44,7 +43,6 @@ std::string RequestHandler::HandleReq(int ID) {
     size_t pos = res.find("/");
     res = res.substr(pos, res.length() - pos);
     res = "peregrev" + res;
-    error_happened = false;
   }
 
   return res;
@@ -62,6 +60,9 @@ void RequestHandler::Cx() {
   f_pressed = false;
   digs_entered = 0;
   input_state = entering_int_part;
+  if (error_happened) {
+    error_happened = false;
+  }
 }
 
 void RequestHandler::PPress() { p_pressed = !p_pressed; }
@@ -87,9 +88,8 @@ void RequestHandler::SwapXY() {
 void RequestHandler::ArrowUp() {
   if (!p_pressed) {
     mem.RegAt(1) = mem.RegAt(0);
-    mem.RegAt(0) = 0.0f;
     digs_entered = 0;
-    input_state = entering_int_part;
+    input_state = showing_res;
   }
 }
 
@@ -133,8 +133,8 @@ void RequestHandler::Delen() {
     p_pressed = !p_pressed;
   } else {
     if (CmpF(mem.RegAt(0).GetDouble(), 0.0f)) {
+      std::cout << "hello!\n";
       error_happened = true;
-      Cx();
     } else {
       mem.RegAt(0) = mem.RegAt(1) / mem.RegAt(0);
     }
@@ -163,7 +163,12 @@ void RequestHandler::Negative() {
 
 void RequestHandler::Dot() {
   if (f_pressed) {
-    mem.RegAt(0) = 1 / mem.RegAt(0);
+    if (CmpF(mem.RegAt(0).GetDouble(), 0.0f)) {
+      error_happened = true;
+      Cx();
+    } else {
+      mem.RegAt(0) = FNum(1 / mem.RegAt(0).GetDouble());
+    }
     f_pressed = !f_pressed;
     digs_entered = 8;
     input_state = showing_res;
@@ -194,6 +199,7 @@ void RequestHandler::VP() {
 void RequestHandler::FPress() { f_pressed = !f_pressed; }
 
 void RequestHandler::NumPress(int ID) {
+  if (error_happened) { error_happened = false; }
   if (f_pressed) {
     if (ID >= 2 && ID <= 7) {
       mem.RegAt(0) = mem.RegAt(ID);
@@ -206,8 +212,8 @@ void RequestHandler::NumPress(int ID) {
   if (p_pressed) {
     if (ID >= 2 && ID <= 7) {
       mem.RegAt(ID) = mem.RegAt(0);
-      mem.RegAt(0) = 0.0f;
       digs_entered = 0;
+      input_state = showing_res;
     }
     p_pressed = !p_pressed;
     return;

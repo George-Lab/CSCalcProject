@@ -4,7 +4,7 @@
 #include <string>
 
 // Compares two floating point values
-bool CmpF(double A, double B, double epsilon = 5e-10);
+bool CmpF(double A, double B, double epsilon = 1e-99);
 
 class FNum {
  public:

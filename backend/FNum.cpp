@@ -58,7 +58,6 @@ void FNum::ComputeStrings() {
   // Check if num is negative
   if (num < 0) {
     str = str.substr(1, str.length() - 1);
-    std::cout << str << std::endl;
   }
 
   // Search for '.' char: separator of integer and fractal parts
