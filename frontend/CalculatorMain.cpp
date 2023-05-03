@@ -1,15 +1,4 @@
-/***************************************************************
- * Name:      CalculatorMain.cpp
- * Purpose:   Code for Application Frame
- * Author:    GeorgeLab ()
- * Created:   2023-04-24
- * Copyright: GeorgeLab ()
- * License:
- **************************************************************/
-
 #include "CalculatorMain.h"
-
-//(*InternalHeaders(CalculatorFrame)
 
 #include <wx/filename.h>
 #include <wx/stdpaths.h>
@@ -77,23 +66,62 @@ CalculatorFrame::CalculatorFrame()
       new wxStaticBitmap(this, wxID_ANY, mem_display_resized_bitmap,
                          wxPoint(606, 399), wxSize(881, 352));
 
-  // // Set up menu bar
-  // wxMenuBar* menuBar = new wxMenuBar();
-  // wxMenu* fileMenu = new wxMenu();
-  // fileMenu->Append(wxID_EXIT, wxT("&Exit\tAlt+F4"), wxT("Quit the
-  // application")); menuBar->Append(fileMenu, wxT("&File")); wxMenu* helpMenu =
-  // new wxMenu(); helpMenu->Append(wxID_ABOUT, wxT("&About"), wxT("Show about
-  // dialog")); menuBar->Append(helpMenu, wxT("&Help")); SetMenuBar(menuBar);
-
-  // Create static text
-  staticText = new wxStaticText(this, wxID_ANY, wxT("--------"),
+  // Create main output window
+  MainOutputWindow = new wxStaticText(this, wxID_ANY, wxT("--------"),
                                 wxPoint(62, 29), wxSize(483, 72));
-  wxFont font(43, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
-  staticText->SetFont(font);
-  staticText->SetBackgroundColour(
+  wxFont MainOutputWinowfont(43, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
+  MainOutputWindow->SetFont(MainOutputWinowfont);
+  MainOutputWindow->SetBackgroundColour(
       wxColour(0, 0, 0));  // Set background color to black
-  staticText->SetForegroundColour(
+  MainOutputWindow->SetForegroundColour(
       wxColour(255, 0, 0));  // Set Text color to red
+
+  // Create windows for displaying the rest of the numbers
+  Reg0 = new wxStaticText(this, wxID_ANY, wxT("--------"), wxPoint(686, 680), wxSize(155,38));
+  Reg1 = new wxStaticText(this, wxID_ANY, wxT("--------"), wxPoint(686, 640), wxSize(155,38));
+  Reg2 = new wxStaticText(this, wxID_ANY, wxT("--------"), wxPoint(686, 600), wxSize(155,38));
+  Reg3 = new wxStaticText(this, wxID_ANY, wxT("--------"), wxPoint(686, 560), wxSize(155,38));
+  Reg4 = new wxStaticText(this, wxID_ANY, wxT("--------"), wxPoint(686, 520), wxSize(155,38));
+  Reg5 = new wxStaticText(this, wxID_ANY, wxT("--------"), wxPoint(686, 480), wxSize(155,38));
+  Reg6 = new wxStaticText(this, wxID_ANY, wxT("--------"), wxPoint(686, 440), wxSize(155,38));
+  Reg7 = new wxStaticText(this, wxID_ANY, wxT("--------"), wxPoint(686, 400), wxSize(155,38));
+  CBuff1 = new wxStaticText(this, wxID_ANY, wxT("--------"), wxPoint(900, 514), wxSize(155,38));
+  CBuff2 = new wxStaticText(this, wxID_ANY, wxT("--------"), wxPoint(1079, 514), wxSize(155,38));
+  CBuff3 = new wxStaticText(this, wxID_ANY, wxT("--------"), wxPoint(1258, 514), wxSize(155,38));
+  CBuff4 = new wxStaticText(this, wxID_ANY, wxT("--------"), wxPoint(1277, 669), wxSize(155,38));
+  CBuff5 = new wxStaticText(this, wxID_ANY, wxT("--------"), wxPoint(1098, 669), wxSize(155,38));
+  CBuff6 = new wxStaticText(this, wxID_ANY, wxT("--------"), wxPoint(918, 669), wxSize(155,38));
+  wxFont MemoryDisplayfont(15, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
+  Reg0->SetFont(MemoryDisplayfont);
+  Reg0->SetForegroundColour(wxColour(0, 0, 0));  
+  Reg1->SetFont(MemoryDisplayfont);
+  Reg1->SetForegroundColour(wxColour(0, 0, 0));  
+  Reg2->SetFont(MemoryDisplayfont);
+  Reg2->SetForegroundColour(wxColour(0, 0, 0));  
+  Reg3->SetFont(MemoryDisplayfont);
+  Reg3->SetForegroundColour(wxColour(0, 0, 0));  
+  Reg4->SetFont(MemoryDisplayfont);
+  Reg4->SetForegroundColour(wxColour(0, 0, 0));  
+  Reg5->SetFont(MemoryDisplayfont);
+  Reg5->SetForegroundColour(wxColour(0, 0, 0));  
+  Reg6->SetFont(MemoryDisplayfont);
+  Reg6->SetForegroundColour(wxColour(0, 0, 0));  
+  Reg7->SetFont(MemoryDisplayfont);
+  Reg7->SetForegroundColour(wxColour(0, 0, 0));
+  CBuff1->SetFont(MemoryDisplayfont);
+  CBuff1->SetForegroundColour(wxColour(0, 0, 0)); 
+  CBuff2->SetFont(MemoryDisplayfont);
+  CBuff2->SetForegroundColour(wxColour(0, 0, 0)); 
+  CBuff3->SetFont(MemoryDisplayfont);
+  CBuff3->SetForegroundColour(wxColour(0, 0, 0)); 
+  CBuff4->SetFont(MemoryDisplayfont);
+  CBuff4->SetForegroundColour(wxColour(0, 0, 0)); 
+  CBuff5->SetFont(MemoryDisplayfont);
+  CBuff5->SetForegroundColour(wxColour(0, 0, 0));
+  CBuff6->SetFont(MemoryDisplayfont);
+  CBuff6->SetForegroundColour(wxColour(0, 0, 0));  
+  
+
 
   // Set up buttons
   wxButton* button10 = new wxButton(this, ID_BUTTON_10, wxT("Turn"),
@@ -106,24 +134,10 @@ CalculatorFrame::CalculatorFrame()
       this, ID_BUTTON_12,
       wxBitmap(pics_location + wxT("/p.png"), wxBITMAP_TYPE_PNG),
       wxPoint(164, 309), wxSize(70, 70));
-  // wxBitmapButton* button4 = new wxBitmapButton(this, ID_BUTTON_4,
-  // wxBitmap(pics_location + wxT("/shgL.png"), wxBITMAP_TYPE_PNG), wxPoint(169,
-  // 199), wxSize(70, 70)); wxBitmapButton* button5 = new wxBitmapButton(this,
-  // ID_BUTTON_5, wxBitmap(pics_location + wxT("/shgR.png"), wxBITMAP_TYPE_PNG),
-  // wxPoint(252, 199), wxSize(70, 70));
   wxBitmapButton* button13 = new wxBitmapButton(
       this, ID_BUTTON_13,
       wxBitmap(pics_location + wxT("/x^y.png"), wxBITMAP_TYPE_PNG),
       wxPoint(252, 310), wxSize(70, 70));
-  // wxBitmapButton* button7 = new wxBitmapButton(this, ID_BUTTON_7,
-  // wxBitmap(pics_location + wxT("/vo.png"), wxBITMAP_TYPE_PNG), wxPoint(334,
-  // 199), wxSize(70, 70)); wxBitmapButton* button8 = new wxBitmapButton(this,
-  // ID_BUTTON_8, wxBitmap(pics_location + wxT("/sp.png"), wxBITMAP_TYPE_PNG),
-  // wxPoint(416, 199), wxSize(70, 70)); wxBitmapButton* button9 = new
-  // wxBitmapButton(this, ID_BUTTON_9, wxBitmap(pics_location + wxT("/bp.png"),
-  // wxBITMAP_TYPE_PNG), wxPoint(330, 310), wxSize(70, 70)); wxBitmapButton*
-  // button10 = new wxBitmapButton(this, ID_BUTTON_10, wxBitmap(pics_location +
-  // wxT("/pp.png"), wxBITMAP_TYPE_PNG), wxPoint(416, 310), wxSize(70, 70));
   wxBitmapButton* button14 = new wxBitmapButton(
       this, ID_BUTTON_14,
       wxBitmap(pics_location + wxT("/swap.png"), wxBITMAP_TYPE_PNG),
@@ -209,20 +223,37 @@ CalculatorFrame::CalculatorFrame()
 }
 
 wxBEGIN_EVENT_TABLE(CalculatorFrame, wxFrame)
-    EVT_BUTTON(wxID_ANY, CalculatorFrame::OnButton) wxEND_EVENT_TABLE()
+    EVT_BUTTON(wxID_ANY, CalculatorFrame::OnButton) 
+wxEND_EVENT_TABLE()
 
-    // void CalculatorFrame::OnExit(wxCommandEvent& event)
-    // {
-    //     Close(true);
-    // }
+void CalculatorFrame::OnButton(wxCommandEvent& event) {
+  // s contains output: multiple values of registers
+  // and circ_buff separated by "/"
+  std::string s = rh.HandleReq(event.GetId());
+  std::string delimiter = "/";
 
-    // void CalculatorFrame::OnAbout(wxCommandEvent& event)
-    // {
-    //     wxMessageBox("This is a simple program with a visual interface using
-    //     C++ and wxWidgets library.",
-    //                  "About", wxOK | wxICON_INFORMATION);
-    // }
+  // Parsing s. Kind of Python's Split("/")
+  size_t pos = 0;
+  std::vector<std::string> nums;
+  while ((pos = s.find(delimiter)) != std::string::npos) {
+    nums.push_back(s.substr(0, pos));
+    s.erase(0, pos + delimiter.length());
+  }
 
-    void CalculatorFrame::OnButton(wxCommandEvent& event) {
-  this->staticText->SetLabel(rh.HandleReq(event.GetId()));
+  this->MainOutputWindow->SetLabel(nums[0]);
+  this->Reg0->SetLabel(nums[0]);
+  this->Reg1->SetLabel(nums[1]);
+  this->Reg2->SetLabel(nums[2]);
+  this->Reg3->SetLabel(nums[3]);
+  this->Reg4->SetLabel(nums[4]);
+  this->Reg5->SetLabel(nums[5]);
+  this->Reg6->SetLabel(nums[6]);
+  this->Reg7->SetLabel(nums[7]);
+
+  this->CBuff1->SetLabel(nums[8]);
+  this->CBuff2->SetLabel(nums[9]);
+  this->CBuff3->SetLabel(nums[10]);
+  this->CBuff4->SetLabel(nums[11]);
+  this->CBuff5->SetLabel(nums[12]);
+  this->CBuff6->SetLabel(nums[13]);
 }

@@ -1,12 +1,3 @@
-/***************************************************************
- * Name:      CalculatorApp.h
- * Purpose:   Defines Application Class
- * Author:    GeorgeLab ()
- * Created:   2023-04-24
- * Copyright: GeorgeLab ()
- * License:
- **************************************************************/
-
 #ifndef CALCULATORAPP_H
 #define CALCULATORAPP_H
 

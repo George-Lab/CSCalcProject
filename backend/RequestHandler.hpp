@@ -6,6 +6,7 @@
 
 #include "MemManager.hpp"
 
+// Constants for input_state
 const int entering_int_part = 1;
 const int entering_fract_part = 2;
 const int entering_exp_part = 3;
@@ -13,12 +14,7 @@ const int showing_res = 4;
 
 class RequestHandler {
  public:
-  RequestHandler()
-      : powered_on(false),
-        p_pressed(false),
-        f_pressed(false),
-        digs_entered(0),
-        input_state(entering_int_part) {}
+  RequestHandler();
 
   std::string HandleReq(int ID);
 
@@ -63,10 +59,15 @@ class RequestHandler {
       &RequestHandler::Dot,    &RequestHandler::Negative,
       &RequestHandler::VP,     &RequestHandler::FPress};
 
+  // digs_entered stores current ammount of digits
+  // that have been entered. Maximum possible value
+  // is 8.
   size_t digs_entered;
+  
   bool powered_on;
   bool p_pressed;
   bool f_pressed;
+  bool error_happened;
   int input_state;
 };
 

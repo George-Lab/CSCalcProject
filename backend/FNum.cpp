@@ -6,6 +6,7 @@
 #include <sstream>
 #include <string>
 
+// Right Strip: removes extra '0' chars from the right side of a string
 std::string RStrip(const std::string& inpt) {
   auto start_it = inpt.begin();
   auto end_it = inpt.rbegin();
@@ -13,9 +14,11 @@ std::string RStrip(const std::string& inpt) {
   return std::string(start_it, end_it.base());
 }
 
-bool CmpF(double A, double B, double epsilon = 5e-10) {
+bool CmpF(double A, double B, double epsilon) {
   return (std::fabs(A - B) < epsilon);
 }
+
+FNum::FNum() : int_part("0"), pow("00"), num(0){};
 
 FNum::FNum(double fl) {
   num = fl;
@@ -37,6 +40,7 @@ void FNum::ComputeDouble() {
 }
 
 void FNum::ComputeStrings() {
+  // Compare num with zero
   if (CmpF(num, 0.0f)) {
     int_part = "0";
     fract_part = "";
@@ -44,20 +48,25 @@ void FNum::ComputeStrings() {
     return;
   }
 
+  // If num is not zero => put it into string stream
+  // in order to get a num's representation using string
   std::ostringstream oss;
   oss.precision(100);
   oss << std::fixed << num;  // use fixed-point notation with 100 decimal places
-
   std::string str = oss.str();
+
+  // Check if num is negative
   if (num < 0) {
     str = str.substr(1, str.length() - 1);
     std::cout << str << std::endl;
   }
 
+  // Search for '.' char: separator of integer and fractal parts
   size_t dot_pos = str.find('.');
   size_t first_dig_pos = str.find_first_not_of(".0");
   int int_part_len = dot_pos - static_cast<int>(first_dig_pos);
 
+  // Compute proper representation
   if (int_part_len >= 0 && int_part_len <= 8) {
     int_part = str.substr(first_dig_pos, int_part_len);
     fract_part = RStrip(str.substr(dot_pos + 1, 8 - 1 - int_part_len));
@@ -68,6 +77,7 @@ void FNum::ComputeStrings() {
     fract_part = RStrip(str.substr(first_dig_pos + 1, 6));
   }
 
+  // Add '-' if num is negative
   if (num < 0) {
     int_part = '-' + int_part;
   }

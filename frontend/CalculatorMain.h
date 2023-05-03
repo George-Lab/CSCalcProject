@@ -1,12 +1,3 @@
-/***************************************************************
- * Name:      CalculatorMain.h
- * Purpose:   Defines Application Frame
- * Author:    GeorgeLab ()
- * Created:   2023-04-24
- * Copyright: GeorgeLab ()
- * License:
- **************************************************************/
-
 #ifndef CALCULATORMAIN_H
 #define CALCULATORMAIN_H
 
@@ -30,7 +21,22 @@ class CalculatorFrame : public wxFrame {
  private:
   RequestHandler rh;
 
-  wxStaticText* staticText;
+  wxStaticText* MainOutputWindow;
+  wxStaticText* Reg0;
+  wxStaticText* Reg1;
+  wxStaticText* Reg2;
+  wxStaticText* Reg3;
+  wxStaticText* Reg4;
+  wxStaticText* Reg5;
+  wxStaticText* Reg6;
+  wxStaticText* Reg7;
+  wxStaticText* CBuff1;
+  wxStaticText* CBuff2;
+  wxStaticText* CBuff3;
+  wxStaticText* CBuff4;
+  wxStaticText* CBuff5;
+  wxStaticText* CBuff6;
+
   wxString pics_location;
   wxDECLARE_EVENT_TABLE();
 };

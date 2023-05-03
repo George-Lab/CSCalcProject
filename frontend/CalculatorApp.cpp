@@ -1,12 +1,3 @@
-/***************************************************************
- * Name:      CalculatorApp.cpp
- * Purpose:   Code for Application Class
- * Author:    GeorgeLab ()
- * Created:   2023-04-24
- * Copyright: GeorgeLab ()
- * License:
- **************************************************************/
-
 #include "CalculatorApp.h"
 
 //(*AppHeaders

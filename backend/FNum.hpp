@@ -3,9 +3,12 @@
 
 #include <string>
 
+// Compares two floating point values
+bool CmpF(double A, double B, double epsilon = 5e-10);
+
 class FNum {
  public:
-  FNum() : int_part("0"), pow("00"), num(0){};
+  FNum();
 
   FNum(double fl);
 
@@ -13,8 +16,10 @@ class FNum {
 
   FNum& operator=(const FNum& other);
 
+  // Uses three strings to compute the num's value
   void ComputeDouble();
 
+  // Uses num's value two compute three strings
   void ComputeStrings();
 
   std::string GetString();
@@ -23,10 +28,13 @@ class FNum {
 
   double GetDouble() const;
 
+  // Add a char to the integer part of the variable
   void AddToInt(char dig);
 
+  // Add a char to the fractal part of the variable
   void AddToFract(char dig);
 
+  // Add a char to the exponent part of the variable
   void AddToPow(char dig);
 
   void ChangeIntSign();
@@ -36,9 +44,14 @@ class FNum {
   friend void swap(FNum& lhs, FNum& rhs);
 
  private:
+  // Stored number is represented using three strings
   std::string int_part;
   std::string fract_part;
+
+  // pow contains exponent of a number
   std::string pow;
+
+  // num contains stored number representation in double format
   double num;
 };
 
@@ -57,23 +70,5 @@ FNum operator-(const FNum& lhs, const FNum& rhs);
 FNum operator*(const FNum& lhs, const FNum& rhs);
 
 FNum operator/(const FNum& lhs, const FNum& rhs);
-
-FNum RaiseToPow(const FNum& lhs, const FNum& rhs);
-
-FNum ComputeLog(const FNum& fl);
-
-FNum ComputeSin(const FNum& fl);
-
-FNum ComputeCos(const FNum& fl);
-
-FNum MultReverse(const FNum& fl);
-
-FNum ComputeSquare(const FNum& fl);
-
-FNum ComputeSqrt(const FNum& fl);
-
-FNum ComputeExp(const FNum& fl);
-
-FNum GetPi();
 
 #endif

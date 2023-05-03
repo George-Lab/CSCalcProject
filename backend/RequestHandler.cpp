@@ -3,6 +3,23 @@
 #include <cmath>
 #include <iostream>
 
+std::string StringForOffState() {
+  std::string str = "--------";
+  for (int i = 0; i < 14; ++i) {
+    str += "/" + str;
+  }
+
+  return str;
+}
+
+RequestHandler::RequestHandler()
+    : powered_on(false),
+      p_pressed(false),
+      f_pressed(false),
+      error_happened(false),
+      digs_entered(0),
+      input_state(entering_int_part) {}
+
 std::string RequestHandler::HandleReq(int ID) {
   if (ID < 10) {
     NumPress(ID);
@@ -11,18 +28,36 @@ std::string RequestHandler::HandleReq(int ID) {
   }
   // ((*this).*(method_ptr))();
 
-  return mem[0].GetString();
+  if (!powered_on) {
+    return StringForOffState();
+  }
+
+  std::string res;
+  for (int i = 0; i < 8; ++i) {
+    res += mem.RegAt(i).GetString() + "/";
+  }
+  for (int i = 1; i < 7; ++i) {
+    res += mem.StackAt(i).GetString() + "/";
+  }
+
+  if (error_happened) {
+    size_t pos = res.find("/");
+    res = res.substr(pos, res.length() - pos);
+    res = "peregrev" + res;
+    error_happened = false;
+  }
+
+  return res;
 }
 
 void RequestHandler::Turn() {
   powered_on = !powered_on;
   Cx();
+  mem.ClearAll();
 }
 
 void RequestHandler::Cx() {
-  for (int i = 0; i < 8; ++i) {
-    mem[i] = 0.0f;
-  }
+  mem.ClearX();
   p_pressed = false;
   f_pressed = false;
   digs_entered = 0;
@@ -33,16 +68,16 @@ void RequestHandler::PPress() { p_pressed = !f_pressed; }
 
 void RequestHandler::XPowY() {
   if (!p_pressed) {
-    mem[0] = std::pow(mem[0].GetDouble(), mem[1].GetDouble());
+    mem.RegAt(0) = std::pow(mem.RegAt(0).GetDouble(), mem.RegAt(1).GetDouble());
     input_state = showing_res;
   }
 }
 
 void RequestHandler::SwapXY() {
   if (!p_pressed) {
-    swap(mem[0], mem[1]);
+    swap(mem.RegAt(0), mem.RegAt(1));
   } else {
-    mem[0] = std::log(mem[0].GetDouble());
+    mem.RegAt(0) = std::log(mem.RegAt(0).GetDouble());
     p_pressed = !p_pressed;
   }
   digs_entered = 8;
@@ -51,8 +86,8 @@ void RequestHandler::SwapXY() {
 
 void RequestHandler::ArrowUp() {
   if (!p_pressed) {
-    mem[1] = mem[0];
-    mem[0] = 0.0f;
+    mem.RegAt(1) = mem.RegAt(0);
+    mem.RegAt(0) = 0.0f;
     digs_entered = 0;
     input_state = entering_int_part;
   }
@@ -60,11 +95,11 @@ void RequestHandler::ArrowUp() {
 
 void RequestHandler::Mult() {
   if (p_pressed) {
-    mem[0] = M_PI;
+    mem.RegAt(0) = M_PI;
     digs_entered = 8;
     p_pressed = !p_pressed;
   } else {
-    mem[0] = mem[0] * mem[1];
+    mem.RegAt(0) = mem.RegAt(0) * mem.RegAt(1);
     digs_entered = 8;
   }
   input_state = showing_res;
@@ -72,10 +107,10 @@ void RequestHandler::Mult() {
 
 void RequestHandler::Plus() {
   if (p_pressed) {
-    mem[0] = std::sin(mem[0].GetDouble());
+    mem.RegAt(0) = std::sin(mem.RegAt(0).GetDouble());
     p_pressed = !p_pressed;
   } else {
-    mem[0] = mem[0] + mem[1];
+    mem.RegAt(0) = mem.RegAt(0) + mem.RegAt(1);
   }
   digs_entered = 8;
   input_state = showing_res;
@@ -83,10 +118,10 @@ void RequestHandler::Plus() {
 
 void RequestHandler::Minus() {
   if (p_pressed) {
-    mem[0] = std::cos(mem[0].GetDouble());
+    mem.RegAt(0) = std::cos(mem.RegAt(0).GetDouble());
     p_pressed = !p_pressed;
   } else {
-    mem[0] = mem[1] - mem[0];
+    mem.RegAt(0) = mem.RegAt(1) - mem.RegAt(0);
   }
   digs_entered = 8;
   input_state = showing_res;
@@ -94,33 +129,47 @@ void RequestHandler::Minus() {
 
 void RequestHandler::Delen() {
   if (p_pressed) {
-    mem[0] = std::exp(mem[0].GetDouble());
+    mem.RegAt(0) = std::exp(mem.RegAt(0).GetDouble());
     p_pressed = !p_pressed;
+  } else {
+    if (CmpF(mem.RegAt(0).GetDouble(), 0.0f)) {
+      error_happened = true;
+      Cx();
+    } else {
+      mem.RegAt(0) = mem.RegAt(1) / mem.RegAt(0);
+    }
   }
-  { mem[0] = mem[1] / mem[0]; }
   digs_entered = 8;
   input_state = showing_res;
 }
 
 void RequestHandler::Negative() {
   if (f_pressed) {
-    mem[0] = mem[0] * mem[0];
+    mem.RegAt(0) = mem.RegAt(0) * mem.RegAt(0);
     f_pressed = !f_pressed;
     digs_entered = 8;
     input_state = showing_res;
+  } else if (p_pressed) {
+    mem.RotateRight();
+    p_pressed = !p_pressed;
+    input_state = showing_res;
   } else if (input_state == entering_int_part ||
              input_state == entering_fract_part || input_state == showing_res) {
-    mem[0].ChangeIntSign();
+    mem.RegAt(0).ChangeIntSign();
   } else {
-    mem[0].ChangePowSign();
+    mem.RegAt(0).ChangePowSign();
   }
 }
 
 void RequestHandler::Dot() {
   if (f_pressed) {
-    mem[0] = 1 / mem[0];
+    mem.RegAt(0) = 1 / mem.RegAt(0);
     f_pressed = !f_pressed;
     digs_entered = 8;
+    input_state = showing_res;
+  } else if (p_pressed) {
+    mem.RotateLeft();
+    p_pressed = !p_pressed;
     input_state = showing_res;
   } else if (input_state == entering_int_part) {
     input_state = entering_fract_part;
@@ -130,7 +179,10 @@ void RequestHandler::Dot() {
 
 void RequestHandler::VP() {
   if (f_pressed) {
-    mem[0] = std::sqrt(mem[0].GetDouble());
+    if (mem.RegAt(0).GetDouble() < 0) {
+      error_happened = true;
+    }
+    mem.RegAt(0) = std::sqrt(mem.RegAt(0).GetDouble());
     f_pressed = !f_pressed;
     digs_entered = 8;
     input_state = showing_res;
@@ -144,16 +196,17 @@ void RequestHandler::FPress() { f_pressed = !f_pressed; }
 void RequestHandler::NumPress(int ID) {
   if (f_pressed) {
     if (ID >= 2 && ID <= 7) {
-      mem[0] = mem[ID];
+      mem.RegAt(0) = mem.RegAt(ID);
       digs_entered = 8;
+      input_state = showing_res;
     }
     f_pressed = !f_pressed;
     return;
   }
   if (p_pressed) {
     if (ID >= 2 && ID <= 7) {
-      mem[ID] = mem[0];
-      mem[0] = 0.0f;
+      mem.RegAt(ID) = mem.RegAt(0);
+      mem.RegAt(0) = 0.0f;
       digs_entered = 0;
     }
     p_pressed = !p_pressed;
@@ -161,7 +214,7 @@ void RequestHandler::NumPress(int ID) {
   }
 
   if (input_state == showing_res) {
-    mem[0] = 0.0f;
+    mem.RegAt(0) = 0.0f;
     input_state = entering_int_part;
     digs_entered = 0;
   }
@@ -171,15 +224,15 @@ void RequestHandler::NumPress(int ID) {
   }
   switch (input_state) {
     case entering_int_part:
-      mem[0].AddToInt('0' + ID);
+      mem.RegAt(0).AddToInt('0' + ID);
       ++digs_entered;
       break;
     case entering_fract_part:
-      mem[0].AddToFract('0' + ID);
+      mem.RegAt(0).AddToFract('0' + ID);
       ++digs_entered;
       break;
     case entering_exp_part:
-      mem[0].AddToPow('0' + ID);
+      mem.RegAt(0).AddToPow('0' + ID);
       break;
     default:
       break;

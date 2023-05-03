@@ -8,8 +8,8 @@ BLD=build
 
 all: CalculatorApp
 
-CalculatorApp: $(BLD)/CalculatorApp.o $(BLD)/CalculatorMain.o $(BLD)/RequestHandler.o $(BLD)/FNum.o
-	$(CC) -o $(BLD)/$@ $(BLD)/CalculatorApp.o $(BLD)/CalculatorMain.o $(BLD)/RequestHandler.o $(BLD)/FNum.o $(WX_LINKING_FLAGS)
+CalculatorApp: $(BLD)/CalculatorApp.o $(BLD)/CalculatorMain.o $(BLD)/RequestHandler.o $(BLD)/FNum.o $(BLD)/MemManager.o
+	$(CC) -o $(BLD)/$@ $(BLD)/CalculatorApp.o $(BLD)/CalculatorMain.o $(BLD)/RequestHandler.o $(BLD)/FNum.o $(BLD)/MemManager.o $(WX_LINKING_FLAGS)
 
 $(BLD)/CalculatorApp.o: $(FE)/CalculatorApp.cpp $(FE)/CalculatorApp.h $(FE)/CalculatorMain.h | $(BLD)
 	$(CC) -o $@ -c $(FE)/CalculatorApp.cpp $(WX_COMPILE_FLAGS)
@@ -22,6 +22,9 @@ $(BLD)/RequestHandler.o: $(BE)/RequestHandler.cpp | $(BLD)
 
 $(BLD)/FNum.o: $(BE)/FNum.cpp | $(BLD)
 	$(CC) -o $@ -c $(BE)/FNum.cpp
+
+$(BLD)/MemManager.o: $(BE)/MemManager.cpp | $(BLD)
+	$(CC) -o $@ -c $(BE)/MemManager.cpp
 
 $(BLD):
 	mkdir $(BLD)

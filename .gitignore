@@ -1,5 +1,6 @@
 build/
 backend/testing_concepts/
+.vscode/
 
 # Prerequisites
 *.d
