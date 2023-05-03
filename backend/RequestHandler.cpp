@@ -6,7 +6,7 @@
 std::string StringForOffState() {
   std::string str = "--------";
   for (int i = 0; i < 14; ++i) {
-    str += "/" + str;
+    str = str.append("/--------");
   }
 
   return str;
@@ -64,7 +64,7 @@ void RequestHandler::Cx() {
   input_state = entering_int_part;
 }
 
-void RequestHandler::PPress() { p_pressed = !f_pressed; }
+void RequestHandler::PPress() { p_pressed = !p_pressed; }
 
 void RequestHandler::XPowY() {
   if (!p_pressed) {
